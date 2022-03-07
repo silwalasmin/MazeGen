@@ -2,9 +2,10 @@
 // Created by asmin on 2022-03-06.
 //
 #include <stack>
+#define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 using namespace std;
-
+#define delay 10ms //ms
 class MazeGen : public olc::PixelGameEngine
 {
 public:
@@ -41,8 +42,8 @@ protected:
     virtual bool OnUserCreate()
     {
         // Maze parameters
-        m_nMazeWidth = 20;
-        m_nMazeHeight = 20;
+        m_nMazeWidth = 40;
+        m_nMazeHeight = 25;
         m_maze = new int[m_nMazeWidth * m_nMazeHeight];
         memset(m_maze, 0x00, m_nMazeWidth * m_nMazeHeight * sizeof(int));
         m_nPathWidth = 3;
@@ -61,7 +62,7 @@ protected:
     virtual bool OnUserUpdate(float fElapsedTime)
     {
         // Slow down for animation
-//        this_thread::sleep_for(100ms);
+        this_thread::sleep_for(delay);
 
         // Little lambda function to calculate index in a readable way
         auto offset = [&](int x, int y)

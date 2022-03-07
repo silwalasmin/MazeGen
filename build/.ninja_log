@@ -1,0 +1,4 @@
+# ninja log v5
+1526	1694	1646633435339214438	MazeGen	8df795a2b08b4aae
+1	3124	1646633413015214836	CMakeFiles/MazeGen.dir/src/olcPixelGameEngine.cpp.o	e8aad4b50279c4b
+0	1526	1646633435171214441	CMakeFiles/MazeGen.dir/src/main.cpp.o	d712026d8e9a8789
