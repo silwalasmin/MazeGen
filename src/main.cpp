@@ -16,8 +16,10 @@ public:
 private:
     int  mazeWidth;
     int  mazeHeight;
+    // This stores value for cells and will be used to tell to which the cell is connected to.
     int *maze;
-//These bits are to locate the direction of the walls. It's for making the task easier. HEX values is bit mask
+
+    //These bits are to locate the direction of the walls. It's for making the task easier. HEX values is bit mask
     enum
     {
         CELL_PATH_N = 0x01,
@@ -125,7 +127,7 @@ protected:
         // Clear Screen by drawing 'spaces' everywhere
         FillRect(0, 0, ScreenWidth(), ScreenHeight(), L' ');
 
-        // Draw Maze
+        // Draw Maze with pathwidth
         for (int x = 0; x < mazeWidth; x++)
         {
             for (int y = 0; y < mazeHeight; y++)
