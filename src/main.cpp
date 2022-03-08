@@ -5,7 +5,7 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 using namespace std;
-#define delay 10ms //ms
+#define delay 100ms //ms
 class MazeGen : public olc::PixelGameEngine
 {
 public:
@@ -38,11 +38,11 @@ protected:
     virtual bool OnUserCreate()
     {
         // Maze Parameters
-        mazeWidth = 40;
+        mazeWidth = 25;
         mazeHeight = 25;
         maze = new int[mazeWidth * mazeHeight];
         memset(maze, 0x00, mazeWidth * mazeHeight * sizeof(int)); // Allocating the memory base on size
-        pathWidth = 3;
+        pathWidth =3;
 
         // A random cell is used to start the maze.
         int x = rand() % mazeWidth;
@@ -64,7 +64,7 @@ protected:
             return (mStack.top().second + y) * mazeWidth + (mStack.top().first + x);
         };
 
-        // Do Maze Algorithm
+        // Maze Algorithm
         if (visitedCells < mazeWidth * mazeHeight)
         {
             // Create a set of unvisted neighbours
@@ -125,7 +125,7 @@ protected:
         }
         // Let's start drawing the necessary items in the screen.
         // Clear Screen by drawing 'spaces' everywhere
-        FillRect(0, 0, ScreenWidth(), ScreenHeight(), L' ');
+        FillRect(0, 0, ScreenWidth(), ScreenHeight(), olc::BLACK);
 
         // Draw Maze with pathwidth
         for (int x = 0; x < mazeWidth; x++)
@@ -155,20 +155,18 @@ protected:
         // Draw Unit - the top of the stack
         for (int py = 0; py < pathWidth; py++)
             for (int px = 0; px < pathWidth; px++)
-                Draw(mStack.top().first * (pathWidth + 1) + px, mStack.top().second * (pathWidth + 1) + py,olc::BLACK); // Draw Cell
+                Draw(mStack.top().first * (pathWidth + 1) + px, mStack.top().second * (pathWidth + 1) + py,olc::GREEN); // Draw Cell
         return true;
+//        DrawString()
     }
 };
-
-
 int main()
 {
     // Seed random number generator
     srand(clock());
 
-    // Use olcConsoleGameEngine derived app
     MazeGen maze;
-    maze.Construct(160, 100, 5, 5);
+    maze.Construct(100, 100, 8, 8);
     maze.Start();
     return 0;
 }
