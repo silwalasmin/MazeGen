@@ -13,14 +13,11 @@ public:
     {
         sAppName="MazeGen";
     }
-
 private:
-    int  m_nMazeWidth;
-    int  m_nMazeHeight;
-    int *m_maze;
-
-
-    // Some bit fields for convenience
+    int  mazeWidth;
+    int  mazeHeight;
+    int *maze;
+//These bits are to locate the direction of the walls. It's for making the task easier. HEX values is bit mask
     enum
     {
         CELL_PATH_N = 0x01,
@@ -29,149 +26,134 @@ private:
         CELL_PATH_W = 0x08,
         CELL_VISITED = 0x10,
     };
-
-
     // Algorithm variables
-    int  m_nVisitedCells;
-    stack<pair<int, int>> m_stack;	// (x, y) coordinate pairs
-    int  m_nPathWidth;
-
+    int  visitedCells;
+    stack<pair<int, int>> mStack;	// pair helps to store two value together i.e. (x,y) coordinates.
+    int  pathWidth;
 
 protected:
     // Called by olcConsoleGameEngine
     virtual bool OnUserCreate()
     {
-        // Maze parameters
-        m_nMazeWidth = 40;
-        m_nMazeHeight = 25;
-        m_maze = new int[m_nMazeWidth * m_nMazeHeight];
-        memset(m_maze, 0x00, m_nMazeWidth * m_nMazeHeight * sizeof(int));
-        m_nPathWidth = 3;
+        // Maze Parameters
+        mazeWidth = 40;
+        mazeHeight = 25;
+        maze = new int[mazeWidth * mazeHeight];
+        memset(maze, 0x00, mazeWidth * mazeHeight * sizeof(int)); // Allocating the memory base on size
+        pathWidth = 3;
 
-        // Choose a starting cell
-        int x = rand() % m_nMazeWidth;
-        int y = rand() % m_nMazeHeight;
-        m_stack.push(make_pair(x, y));
-        m_maze[y * m_nMazeWidth + x] = CELL_VISITED;
-        m_nVisitedCells = 1;
-
+        // A random cell is used to start the maze.
+        int x = rand() % mazeWidth;
+        int y = rand() % mazeHeight;
+        mStack.push(make_pair(x, y));
+        maze[y * mazeWidth + x] = CELL_VISITED;
+        visitedCells = 1;
         return true;
     }
-
-    // Called by olcConsoleGameEngine
-    virtual bool OnUserUpdate(float fElapsedTime)
+// Inside this function the changes is updated and viewed in the screen.
+    virtual bool OnUserUpdate(float elapsedTime)
     {
-        // Slow down for animation
+        // this slows down the process. It's not for slowing the algorithm process. Rather it slows the animation
         this_thread::sleep_for(delay);
 
         // Little lambda function to calculate index in a readable way
         auto offset = [&](int x, int y)
         {
-            return (m_stack.top().second + y) * m_nMazeWidth + (m_stack.top().first + x);
+            return (mStack.top().second + y) * mazeWidth + (mStack.top().first + x);
         };
 
         // Do Maze Algorithm
-        if (m_nVisitedCells < m_nMazeWidth * m_nMazeHeight)
+        if (visitedCells < mazeWidth * mazeHeight)
         {
             // Create a set of unvisted neighbours
             vector<int> neighbours;
 
             // North neighbour
-            if (m_stack.top().second > 0 && (m_maze[offset(0, -1)] & CELL_VISITED) == 0)
+            if (mStack.top().second > 0 && (maze[offset(0, -1)] & CELL_VISITED) == 0)
                 neighbours.push_back(0);
             // East neighbour
-            if (m_stack.top().first < m_nMazeWidth - 1 && (m_maze[offset(1, 0)] & CELL_VISITED) == 0)
+            if (mStack.top().first < mazeWidth - 1 && (maze[offset(1, 0)] & CELL_VISITED) == 0)
                 neighbours.push_back(1);
             // South neighbour
-            if (m_stack.top().second < m_nMazeHeight - 1 && (m_maze[offset(0, 1)] & CELL_VISITED) == 0)
+            if (mStack.top().second < mazeHeight - 1 && (maze[offset(0, 1)] & CELL_VISITED) == 0)
                 neighbours.push_back(2);
             // West neighbour
-            if (m_stack.top().first > 0 && (m_maze[offset(-1, 0)] & CELL_VISITED) == 0)
+            if (mStack.top().first > 0 && (maze[offset(-1, 0)] & CELL_VISITED) == 0)
                 neighbours.push_back(3);
 
             // Are there any neighbours available?
             if (!neighbours.empty())
             {
-                // Choose one available neighbour at random
+// Next probable cell is choosen randomly
                 int next_cell_dir = neighbours[rand() % neighbours.size()];
-
-                // Create a path between the neighbour and the current cell
+                // Creating the path between the current and next cell. The code below helps to delete the line between current and next cells.
                 switch (next_cell_dir)
                 {
                     case 0: // North
-                        m_maze[offset(0, -1)] |= CELL_VISITED | CELL_PATH_S;
-                        m_maze[offset(0,  0)] |= CELL_PATH_N;
-                        m_stack.push(make_pair((m_stack.top().first + 0), (m_stack.top().second - 1)));
+                        maze[offset(0, -1)] |= CELL_VISITED | CELL_PATH_S;
+                        maze[offset(0,  0)] |= CELL_PATH_N;
+                        mStack.push(make_pair((mStack.top().first + 0), (mStack.top().second - 1)));
                         break;
 
                     case 1: // East
-                        m_maze[offset(+1, 0)] |= CELL_VISITED | CELL_PATH_W;
-                        m_maze[offset( 0, 0)] |= CELL_PATH_E;
-                        m_stack.push(make_pair((m_stack.top().first + 1), (m_stack.top().second + 0)));
+                        maze[offset(+1, 0)] |= CELL_VISITED | CELL_PATH_W;
+                        maze[offset( 0, 0)] |= CELL_PATH_E;
+                        mStack.push(make_pair((mStack.top().first + 1), (mStack.top().second + 0)));
                         break;
 
                     case 2: // South
-                        m_maze[offset(0, +1)] |= CELL_VISITED | CELL_PATH_N;
-                        m_maze[offset(0,  0)] |= CELL_PATH_S;
-                        m_stack.push(make_pair((m_stack.top().first + 0), (m_stack.top().second + 1)));
+                        maze[offset(0, +1)] |= CELL_VISITED | CELL_PATH_N;
+                        maze[offset(0,  0)] |= CELL_PATH_S;
+                        mStack.push(make_pair((mStack.top().first + 0), (mStack.top().second + 1)));
                         break;
 
                     case 3: // West
-                        m_maze[offset(-1, 0)] |= CELL_VISITED | CELL_PATH_E;
-                        m_maze[offset( 0, 0)] |= CELL_PATH_W;
-                        m_stack.push(make_pair((m_stack.top().first - 1), (m_stack.top().second + 0)));
+                        maze[offset(-1, 0)] |= CELL_VISITED | CELL_PATH_E;
+                        maze[offset( 0, 0)] |= CELL_PATH_W;
+                        mStack.push(make_pair((mStack.top().first - 1), (mStack.top().second + 0)));
                         break;
-
                 }
-
-                m_nVisitedCells++;
+                visitedCells++;
             }
             else
             {
-                // No available neighbours so backtrack!
-                m_stack.pop();
+                // if next cell is not found. the cell is popped from the stack and we go back till next path is found!
+                mStack.pop();
             }
         }
-
-
-        // === DRAWING STUFF ===
-
+        // Let's start drawing the necessary items in the screen.
         // Clear Screen by drawing 'spaces' everywhere
         FillRect(0, 0, ScreenWidth(), ScreenHeight(), L' ');
 
         // Draw Maze
-        for (int x = 0; x < m_nMazeWidth; x++)
+        for (int x = 0; x < mazeWidth; x++)
         {
-            for (int y = 0; y < m_nMazeHeight; y++)
+            for (int y = 0; y < mazeHeight; y++)
             {
-                // Each cell is inflated by m_nPathWidth, so fill it in
-                for (int py = 0; py < m_nPathWidth; py++)
-                    for (int px = 0; px < m_nPathWidth; px++)
+                // Each cell is inflated by pathWidth, so fill it in
+                for (int py = 0; py < pathWidth; py++)
+                    for (int px = 0; px < pathWidth; px++)
                     {
-                        if (m_maze[y * m_nMazeWidth + x] & CELL_VISITED)
-                            Draw(x * (m_nPathWidth + 1) + px, y * (m_nPathWidth + 1) + py, olc::WHITE); // Draw Cell
+                        if (maze[y * mazeWidth + x] & CELL_VISITED)
+                            Draw(x * (pathWidth + 1) + px, y * (pathWidth + 1) + py, olc::WHITE); // Draw Cell
                         else
-                            Draw(x * (m_nPathWidth + 1) + px, y * (m_nPathWidth + 1) + py, olc::BLUE); // Draw Cell
+                            Draw(x * (pathWidth + 1) + px, y * (pathWidth + 1) + py, olc::RED); // Draw Cell
                     }
-
                 // Draw passageways between cells
-                for (int p = 0; p < m_nPathWidth; p++)
+                for (int p = 0; p < pathWidth; p++)
                 {
-                    if (m_maze[y * m_nMazeWidth + x] & CELL_PATH_S)
-                        Draw(x * (m_nPathWidth + 1) + p, y * (m_nPathWidth + 1) + m_nPathWidth); // Draw South Passage
+                    if (maze[y * mazeWidth + x] & CELL_PATH_S)
+                        Draw(x * (pathWidth + 1) + p, y * (pathWidth + 1) + pathWidth); // Draw South Passage
 
-                    if (m_maze[y * m_nMazeWidth + x] & CELL_PATH_E)
-                        Draw(x * (m_nPathWidth + 1) + m_nPathWidth, y * (m_nPathWidth + 1) + p); // Draw East Passage
+                    if (maze[y * mazeWidth + x] & CELL_PATH_E)
+                        Draw(x * (pathWidth + 1) + pathWidth, y * (pathWidth + 1) + p); // Draw East Passage
                 }
             }
         }
-
         // Draw Unit - the top of the stack
-        for (int py = 0; py < m_nPathWidth; py++)
-            for (int px = 0; px < m_nPathWidth; px++)
-                Draw(m_stack.top().first * (m_nPathWidth + 1) + px, m_stack.top().second * (m_nPathWidth + 1) + py,olc::GREEN); // Draw Cell
-
-
+        for (int py = 0; py < pathWidth; py++)
+            for (int px = 0; px < pathWidth; px++)
+                Draw(mStack.top().first * (pathWidth + 1) + px, mStack.top().second * (pathWidth + 1) + py,olc::BLACK); // Draw Cell
         return true;
     }
 };
@@ -183,9 +165,8 @@ int main()
     srand(clock());
 
     // Use olcConsoleGameEngine derived app
-    MazeGen game;
-    game.Construct(160, 100, 8, 8);
-    game.Start();
-
+    MazeGen maze;
+    maze.Construct(160, 100, 5, 5);
+    maze.Start();
     return 0;
 }
