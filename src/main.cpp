@@ -5,7 +5,7 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 using namespace std;
-#define delay 100ms //ms
+#define delay 10ms //ms
 class MazeGen : public olc::PixelGameEngine
 {
 public:
@@ -165,7 +165,7 @@ int main()
     srand(clock());
 
     MazeGen maze;
-    maze.Construct(100, 100, 8, 8);
+    maze.Construct(160, 100, 8, 8);
     maze.Start();
     return 0;
 }
