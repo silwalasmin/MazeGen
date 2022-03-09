@@ -157,7 +157,6 @@ protected:
             for (int px = 0; px < pathWidth; px++)
                 Draw(mStack.top().first * (pathWidth + 1) + px, mStack.top().second * (pathWidth + 1) + py,olc::GREEN); // Draw Cell
         return true;
-//        DrawString()
     }
 };
 int main()

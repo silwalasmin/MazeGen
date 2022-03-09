@@ -13,3 +13,5 @@ _deps
 cmake-build-debug
 .idea
 build
+DSA_Report.pdf
+mazeGen.png
