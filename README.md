@@ -4,7 +4,8 @@ This Project is titled "MazeGenerator Using DFS Algorithm". It's about generatin
 The library used to create the window and render the maze is **olcPixelGameEngine.h**  
 by https://github.com/OneLoneCoder/olcPixelGameEngine
 
-**Contributers:** <br/>
-Ankit Shahi <br/>
-Asmin Silwal <br/>
-Bhupendra Chaulagain <br/>
+**Contributors:** <br/>
+Ankit Shahi (PUL076BEI006) <br/>
+Bhupendra Chaulagain (PUL076BEI011) <br/>
+Asmin Silwal (PUL076BEI040) <br/>
+
